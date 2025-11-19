@@ -9,12 +9,13 @@ public class Card : MonoBehaviour
     [SerializeField]
     private Transform visualTransform;
 
-    private bool isInteractable, isBeingRevealed, isFlippingUp, isFlippingDown;
+    private bool isInteractable, isSelected, isBeingRevealed, isFlippingUp, isFlippingDown;
     private Coroutine flippingUp, flippingDown;
 
     private void OnEnable()
     {
         visualTransform.rotation = Quaternion.identity;
+
         isFlippedUp = true;
         isInteractable = false;
         isBeingRevealed = false;

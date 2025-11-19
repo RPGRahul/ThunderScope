@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     private Camera mainCamera;
 
     private bool isInGame;
-    private float currentScore;
+    private int currentScore;
 
     private void Awake()
     {
@@ -73,6 +73,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void SetupGameEnd()
+    {
+        uiManager.ShowInGameCanvas(false);
+        uiManager.ShowGameEndCanvas(true);
+
+        uiManager.UpdateGameEndScoreValueText(currentScore.ToString());
+        if (PlayerPrefs.HasKey("HighScore"))
+        {
+            int highScore = PlayerPrefs.GetInt("HighScore");
+            if (currentScore > highScore)
+            {
+                uiManager.UpdateGameEndHighScoreValueText(currentScore.ToString());
+                PlayerPrefs.SetInt("HighScore", currentScore);
+            }
+            else
+            {
+                uiManager.UpdateGameEndHighScoreValueText(highScore.ToString());
+            }
+        }
+        else
+        {
+            uiManager.UpdateGameEndHighScoreValueText(currentScore.ToString());
+            PlayerPrefs.SetInt("HighScore", currentScore);
+        }
+    }
+
     public void RequestStartGame()
     {
         uiManager.ShowMainMenuCanvas(false);
@@ -81,16 +107,27 @@ public class GameManager : MonoBehaviour
 
     public void RequestEasyDifficulty()
     {
-
+        uiManager.ShowSelectDifficultyCanvas(false);
+        uiManager.ShowInGameCanvas(true);
+        // Build 3X4 Grid here
     }
 
     public void RequestMediumDifficulty()
     {
-
+        uiManager.ShowSelectDifficultyCanvas(false);
+        uiManager.ShowInGameCanvas(true);
+        // Build 3X6 Grid here
     }
 
     public void RequestHardDifficulty()
     {
+        uiManager.ShowSelectDifficultyCanvas(false);
+        uiManager.ShowInGameCanvas(true);
+        // Build 4X6 Grid here
+    }
 
+    public void RequestReturnFromEnd()
+    {
+        SetupMainMenu();
     }
 }

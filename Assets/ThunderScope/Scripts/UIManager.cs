@@ -73,17 +73,17 @@ public class UIManager : MonoBehaviour
 
     public void SelectDifficultyEasyButtonPressed()
     {
-
+        gameManager.RequestEasyDifficulty();
     }
 
     public void SelectDifficultyMediumButtonPressed()
     {
-
+        gameManager.RequestMediumDifficulty();
     }
 
     public void SelectDifficultyHardButtonPressed()
     {
-
+        gameManager.RequestHardDifficulty();
     }
 
     // In Game Canvas
@@ -97,7 +97,7 @@ public class UIManager : MonoBehaviour
 
     public void GameEndReturnButtonPressed()
     {
-
+        gameManager.RequestReturnFromEnd();
     }
 
     public void UpdateGameEndScoreValueText(string text)
