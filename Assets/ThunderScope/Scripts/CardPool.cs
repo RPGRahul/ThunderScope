@@ -3,10 +3,17 @@ using UnityEngine;
 
 public class CardPool : MonoBehaviour
 {
+    public static CardPool instance;
+
     [SerializeField]
     private List<GameObject> cardPrefabs;
 
     private List<GameObject> cardPool;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Start()
     {
@@ -33,7 +40,7 @@ public class CardPool : MonoBehaviour
             return null;
         }
 
-        List<GameObject> sessionCardPool = new List<GameObject>();
+        List<GameObject> sessionCardPool = new();
         for (int i = 0; i < count; i++)
         {
             sessionCardPool.Add(cardPool[i]);

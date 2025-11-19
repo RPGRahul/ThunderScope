@@ -22,6 +22,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMP_Text inGameScoreValueText;
 
+    [SerializeField]
+    private TMP_Text gameEndScoreValueText;
+    [SerializeField]
+    private TMP_Text gameEndHighScoreValueText;
+
     private void Awake()
     {
         instance = this;
@@ -88,4 +93,20 @@ public class UIManager : MonoBehaviour
         inGameScoreValueText.text = text;
     }
 
+    // Game End Canvas
+
+    public void GameEndReturnButtonPressed()
+    {
+
+    }
+
+    public void UpdateGameEndScoreValueText(string text)
+    {
+        gameEndScoreValueText.text = text;
+    }
+
+    public void UpdateGameEndHighScoreValueText(string text)
+    {
+        gameEndHighScoreValueText.text = text;
+    }
 }
