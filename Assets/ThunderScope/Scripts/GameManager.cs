@@ -20,7 +20,44 @@ public class GameManager : MonoBehaviour
         uiManager = UIManager.instance;
         audioManager = AudioManager.instance;
 
+        SetupMainMenu();
+    }
+
+    private void SetupMainMenu()
+    {
         uiManager.ShowInGameCanvas(false);
+        uiManager.ShowSelectDifficultyCanvas(false);
+        uiManager.ShowGameEndCanvas(false);
         uiManager.ShowMainMenuCanvas(true);
+
+        if (PlayerPrefs.HasKey("HighScore"))
+        {
+            uiManager.UpdateMainMenuHighScoreValueText(PlayerPrefs.GetInt("HighScore").ToString());
+        }
+        else
+        {
+            uiManager.UpdateMainMenuHighScoreValueText("0");
+        }
+    }
+
+    public void RequestStartGame()
+    {
+        uiManager.ShowMainMenuCanvas(false);
+        uiManager.ShowSelectDifficultyCanvas(true);
+    }
+
+    public void RequestEasyDifficulty()
+    {
+
+    }
+
+    public void RequestMediumDifficulty()
+    {
+
+    }
+
+    public void RequestHardDifficulty()
+    {
+
     }
 }
