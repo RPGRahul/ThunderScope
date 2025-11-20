@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 60;
+
         if (deleteHighScore)
             PlayerPrefs.DeleteAll();
 
@@ -46,17 +48,19 @@ public class GameManager : MonoBehaviour
     {
         if (isInGame)
         {
+#if UNITY_STANDALONE
             // For Desktop
             if (Input.GetMouseButtonDown(0))
             {
                 CheckClick(Input.mousePosition);
             }
-
+#elif UNITY_ANDROID || UNITY_IOS
             // For Mobile
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {
                 CheckClick(Input.GetTouch(0).position);
             }
+#endif
         }
     }
 
