@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class CardGrid : MonoBehaviour
 {
+    public static CardGrid instance;
+
     [SerializeField]
     private Camera mainCamera;
 
@@ -16,15 +18,17 @@ public class CardGrid : MonoBehaviour
     private const float spacing = 0.5f;
     private const float verticalPadding = 1.5f;
 
+    private void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
         camHeight = mainCamera.orthographicSize * 2f;
         camWidth = camHeight * mainCamera.aspect;
         camTop = camHeight / 2f;
         usableHeight = camHeight - (verticalPadding * 2f);
-
-        // TEST
-        BuildCards(3, 6);
     }
 
     public void BuildCards(int rows, int columns)
@@ -72,7 +76,7 @@ public class CardGrid : MonoBehaviour
         foreach (GameObject card in sessionCards)
         {
             card.SetActive(true);
-            card.GetComponentInParent<Card>().BeginReveal();
+            card.GetComponentInParent<Card>().StartRevealSequence();
         }
     }
 

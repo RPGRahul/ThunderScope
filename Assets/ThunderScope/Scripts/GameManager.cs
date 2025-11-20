@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,12 +6,24 @@ public class GameManager : MonoBehaviour
 
     private UIManager uiManager;
     private AudioManager audioManager;
+    private CardGrid cardGrid;
+
+    private enum Difficulty
+    {
+        easy,
+        medium,
+        hard
+    }
+
+    [SerializeField]
+    private bool deleteHighScore;
 
     [SerializeField]
     private Camera mainCamera;
 
     private bool isInGame;
-    private int currentScore;
+    private int currentScore, totalPairs, pairsFound, currentCombo;
+    private Card firstCard, secondCard;
 
     private void Awake()
     {
@@ -21,8 +32,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (deleteHighScore)
+            PlayerPrefs.DeleteAll();
+
         uiManager = UIManager.instance;
         audioManager = AudioManager.instance;
+        cardGrid = CardGrid.instance;
 
         SetupMainMenu();
     }
@@ -52,7 +67,59 @@ public class GameManager : MonoBehaviour
         {
             // Only cards have colliders, so there will be always be a Card object
             Card tappedCard = hit.collider.GetComponentInParent<Card>();
-            tappedCard.Tapped();
+            Card selectedCard = tappedCard.Tapped();
+
+            // If card was selected, it will return itself
+            if (selectedCard != null)
+            {
+                audioManager.PlaySFXOneShot(0);
+                if (firstCard == null)
+                {
+                    firstCard = selectedCard;
+                }
+                else
+                {
+                    secondCard = selectedCard;
+
+                    // Matching check
+                    if (firstCard.id == secondCard.id)
+                    {
+                        // Match success
+                        currentScore += 5;
+                        ++pairsFound;
+                        ++currentCombo;
+                        if (currentCombo > 1)
+                        {
+                            currentScore += currentCombo - 1;
+                            uiManager.UpdateInGameComboText(string.Format("X{0} Combo!", currentCombo));
+                        }
+                        uiManager.UpdateInGameScoreValueText(currentScore.ToString());
+                        audioManager.PlaySFXOneShot(1);
+
+                        firstCard.StartDeactivationSequence();
+                        secondCard.StartDeactivationSequence();
+
+                        // Check game end condition
+                        if (pairsFound == totalPairs)
+                        {
+                            Invoke(nameof(SetupGameEnd), 1f);
+                        }
+                    }
+                    else
+                    {
+                        // Match fail
+                        currentCombo = 0;
+                        uiManager.UpdateInGameComboText(string.Empty);
+                        audioManager.PlaySFXOneShot(2);
+
+                        firstCard.StartUnselectSequence();
+                        secondCard.StartUnselectSequence();
+                    }
+
+                    firstCard = null;
+                    secondCard = null;
+                }
+            }
         }
     }
 
@@ -73,11 +140,44 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void SetupGameSession(Difficulty difficulty)
+    {
+        currentScore = 0;
+        currentCombo = 0;
+        pairsFound = 0;
+
+        uiManager.ShowSelectDifficultyCanvas(false);
+        uiManager.ShowInGameCanvas(true);
+
+        uiManager.UpdateInGameScoreValueText("0");
+        uiManager.UpdateInGameComboText(string.Empty);
+
+        switch (difficulty)
+        {
+            case Difficulty.easy:
+                cardGrid.BuildCards(3, 4);
+                totalPairs = 6;
+                break;
+
+            case Difficulty.medium:
+                cardGrid.BuildCards(3, 6);
+                totalPairs = 9;
+                break;
+
+            case Difficulty.hard:
+                cardGrid.BuildCards(4, 6);
+                totalPairs = 12;
+                break;
+        }
+
+        isInGame = true;
+    }
+
     private void SetupGameEnd()
     {
-        uiManager.ShowInGameCanvas(false);
-        uiManager.ShowGameEndCanvas(true);
+        isInGame = false;
 
+        audioManager.PlaySFXOneShot(3);
         uiManager.UpdateGameEndScoreValueText(currentScore.ToString());
         if (PlayerPrefs.HasKey("HighScore"))
         {
@@ -97,7 +197,12 @@ public class GameManager : MonoBehaviour
             uiManager.UpdateGameEndHighScoreValueText(currentScore.ToString());
             PlayerPrefs.SetInt("HighScore", currentScore);
         }
+
+        uiManager.ShowInGameCanvas(false);
+        uiManager.ShowGameEndCanvas(true);
     }
+
+    // Public Methods, to be called by other classes
 
     public void RequestStartGame()
     {
@@ -107,23 +212,17 @@ public class GameManager : MonoBehaviour
 
     public void RequestEasyDifficulty()
     {
-        uiManager.ShowSelectDifficultyCanvas(false);
-        uiManager.ShowInGameCanvas(true);
-        // Build 3X4 Grid here
+        SetupGameSession(Difficulty.easy);
     }
 
     public void RequestMediumDifficulty()
     {
-        uiManager.ShowSelectDifficultyCanvas(false);
-        uiManager.ShowInGameCanvas(true);
-        // Build 3X6 Grid here
+        SetupGameSession(Difficulty.medium);
     }
 
     public void RequestHardDifficulty()
     {
-        uiManager.ShowSelectDifficultyCanvas(false);
-        uiManager.ShowInGameCanvas(true);
-        // Build 4X6 Grid here
+        SetupGameSession(Difficulty.hard);
     }
 
     public void RequestReturnFromEnd()

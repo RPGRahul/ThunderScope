@@ -21,6 +21,8 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private TMP_Text inGameScoreValueText;
+    [SerializeField]
+    private TMP_Text inGameComboText;
 
     [SerializeField]
     private TMP_Text gameEndScoreValueText;
@@ -91,6 +93,11 @@ public class UIManager : MonoBehaviour
     public void UpdateInGameScoreValueText(string text)
     {
         inGameScoreValueText.text = text;
+    }
+
+    public void UpdateInGameComboText(string text)
+    {
+        inGameComboText.text = text;
     }
 
     // Game End Canvas

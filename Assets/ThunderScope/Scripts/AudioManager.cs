@@ -8,6 +8,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField]
     private AudioSource sfxSource;
     [SerializeField]
+    private AudioSource sfxOneShotSource;
+    [SerializeField]
     private List<AudioClip> sfxClips;
 
     private void Awake()
@@ -22,5 +24,10 @@ public class AudioManager : MonoBehaviour
 
         sfxSource.clip = sfxClips[index];
         sfxSource.Play();
+    }
+
+    public void PlaySFXOneShot(int index)
+    {
+        sfxOneShotSource.PlayOneShot(sfxClips[index]);
     }
 }
